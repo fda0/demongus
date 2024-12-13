@@ -16,15 +16,15 @@ if [ -v gcc ];       then compiler="${CC:-gcc}"; echo "[gcc compile]"; fi
 auto_compile_flags=''
 
 # --- Compile/Link Line Definitions -------------------------------------------
-clang_common='-I../src/ -I../libs/SDL/include/ -I../libs/SDL_image/include/ -g -fdiagnostics-absolute-paths -Wall -Wno-unused-variable -std=c23'
+clang_common='-I../src/ -I../libs/SDL/include/ -I../libs/SDL_image/include/ -I../libs/SDL_net/include/ -g -fdiagnostics-absolute-paths -Wall -Wno-unused-variable -std=c23'
 clang_debug="$compiler -O0 -DBUILD_DEBUG=1 ${clang_common} ${auto_compile_flags}"
 clang_release="$compiler -O2 -DBUILD_DEBUG=0 ${clang_common} ${auto_compile_flags}"
-clang_link="../libs/SDL/build/libSDL3.a ../libs/SDL_image/build/libSDL3_image.a -lm"
+clang_link="../libs/SDL/build/libSDL3.a ../libs/SDL_image/build/libSDL3_image.a ../libs/SDL_net/build/libSDL3_net.a -lm"
 clang_out="-o"
-gcc_common='-I../src/ -I../libs/SDL/include/ -I../libs/SDL_image/include/ -g -Wall -Wno-unused-variable -std=c23'
+gcc_common='-I../src/ -I../libs/SDL/include/ -I../libs/SDL_image/include/ -I../libs/SDL_net/include/ -g -Wall -Wno-unused-variable -std=c23'
 gcc_debug="$compiler -O0 -DBUILD_DEBUG=1 ${gcc_common} ${auto_compile_flags}"
 gcc_release="$compiler -O2 -DBUILD_DEBUG=0 ${gcc_common} ${auto_compile_flags}"
-gcc_link="../libs/SDL/build/libSDL3.a ../libs/SDL_image/build/libSDL3_image.a -lm"
+gcc_link="../libs/SDL/build/libSDL3.a ../libs/SDL_image/build/libSDL3_image.a ../libs/SDL_net/build/libSDL3_net.a -lm"
 gcc_out="-o"
 
 # --- Choose Compile/Link Lines -----------------------------------------------
@@ -61,6 +61,13 @@ if [ -v sdl ]; then
         cd ../../
     else
         echo "SDL_image directory not found! Make sure to initialize git submodules."
+    fi
+    if [ -d "libs/SDL_net" ]; then
+        cd libs/SDL_net
+        cmake -S . -B build -DBUILD_SHARED_LIBS=OFF "-DSDL3_DIR=..\SDL\build" && cmake --build build
+        cd ../../
+    else
+        echo "SDL_net directory not found! Make sure to initialize git submodules."
     fi
 fi
 
